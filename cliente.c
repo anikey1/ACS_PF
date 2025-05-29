@@ -34,7 +34,7 @@ void signal_handler(int sig) {
     exit(0);
 }
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     struct sockaddr_in server;
     struct hostent *sp;
     int n;
@@ -178,4 +178,6 @@ void main(int argc, char *argv[]) {
     close(sd);
     printf("¡Desconectado del servidor!\n");
     exit(0);
+    return 0;
+
 }

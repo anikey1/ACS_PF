@@ -100,12 +100,12 @@ char* ejecutar_comando(const char* comando) {
     return resultado;
 }
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     struct sockaddr_in servidor;
     struct sockaddr_in cliente;
     struct hostent* info_cliente;
     int fd_c;
-    int longClient;
+    socklen_t longClient;
     char buf_comando[256];
     char *buf_respuesta;
     
@@ -256,4 +256,6 @@ void main(int argc, char *argv[]) {
     close(fd_s);
     shutdown(fd_s, SHUT_RDWR);
     exit(0);
+    return 0;
+
 }
