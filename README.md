@@ -72,7 +72,7 @@ salir
 
 ## 👨‍💻 Autores
 
-**Anikey Andrea Gómez Guzman**
+**Anikey Andrea Gómez Guzman**  
 **Marco Alejandro Vigi Garduño**  
 Estudiantes de Ingeniería en Computación  
 Facultad de Ingeniería - UNAM
