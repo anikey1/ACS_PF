@@ -28,26 +28,28 @@ gcc -o servidor servidor.c
 ```
 
 ## 🖥️ Ejecución
-
-```bash
 # 1. Iniciar el servidor
+```bash
 ./servidor <puerto>
-
+```
 # Ejemplo
+```bash
 ./servidor 8080
 ```
 
-```bash
 # 2. Iniciar el cliente (en otra terminal o máquina)
+```bash
 ./cliente <IP-servidor> <puerto>
+```
 
 # Ejemplos
+```bash
 ./cliente 127.0.0.1 8080       # Conexión local
 ./cliente 192.168.1.100 8080   # Conexión remota
 ```
 
-```bash
 # 3. Usar comandos dentro del cliente
+```bash
 ls -l
 pwd
 whoami
@@ -55,14 +57,16 @@ date
 ps -e
 ```
 
-```bash
 # 4. Para terminar la sesión
+```bash
 exit
-# o
-salir
-
-# También puedes usar Ctrl+C
 ```
+# O también
+```bash
+salir
+```
+# También puedes usar Ctrl+C
+
 
 ## ⚠️ Consideraciones
 
