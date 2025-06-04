@@ -28,7 +28,7 @@ gcc -o servidor servidor.c
 ```
 
 ## 🖥️ Ejecución
-# 1. Iniciar el servidor
+## 1. Iniciar el servidor
 ```bash
 ./servidor <puerto>
 ```
