@@ -1,27 +1,27 @@
 /*
-
  * Uso: ./servidor <puerto>
  * 
  * Compilación: gcc -o servidor servidor.c
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <time.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <errno.h>
-#include <signal.h>
+#include <stdio.h>      // printf, fprintf, perror
+#include <stdlib.h>     // exit, malloc, free
+#include <string.h>     // strlen, strcpy, strcmp
+#include <sys/types.h>  // tipos de datos del sistema
+#include <sys/socket.h> // socket, bind, listen, accept
+#include <netinet/in.h> // estructuras sockaddr_in
+#include <arpa/inet.h>  // inet_ntoa
+#include <netdb.h>      // gethostbyaddr
+#include <unistd.h>     // close
+#include <time.h>       // time, localtime
+#include <fcntl.h>      // control de archivos
+#include <limits.h>     // límites del sistema
+#include <errno.h>      // códigos de error
+#include <signal.h>     // manejo de señales
+//Librerías necesarias para sockets, manejo de strings, tiempo y señales.
 
-#define QLEN 2
-#define BUFFER_SIZE 4096
+#define QLEN 2          // Cola de conexiones pendientes
+#define BUFFER_SIZE 4096 // Tamaño del buffer para comandos
 
 // Variable global para manejo de señales
 int fd_s = -1;
@@ -30,8 +30,8 @@ int fd_s = -1;
 void signal_handler(int sig) {
     printf("\n[SERVIDOR] Cerrando servidor...\n");
     if (fd_s != -1) {
-        close(fd_s);
-        shutdown(fd_s, SHUT_RDWR);
+        close(fd_s);              // Cerrar socket
+        shutdown(fd_s, SHUT_RDWR); // Cerrar ambas direcciones de comunicación
     }
     exit(0);
 }
@@ -43,7 +43,7 @@ char* ejecutar_comando(const char* comando) {
     char *temp_resultado = NULL;
     char buffer[BUFFER_SIZE];
     int total_size = 0;
-    
+    //Declaración de variables para manejar la ejecución del comando.
     // Verificar comando válido
     if (comando == NULL || strlen(comando) == 0) {
         resultado = malloc(50);
@@ -60,7 +60,7 @@ char* ejecutar_comando(const char* comando) {
         snprintf(resultado, 100, "Error: No se pudo ejecutar '%s'\n", comando);
         return resultado;
     }
-    
+    //popen() ejecuta el comando en el shell y retorna un pipe para leer su salida.
     // Inicializar resultado
     resultado = malloc(1);
     resultado[0] = '\0';
@@ -82,7 +82,7 @@ char* ejecutar_comando(const char* comando) {
         strcpy(resultado + total_size, buffer);
         total_size += buffer_len;
     }
-    
+    //Bucle de lectura que va acumulando toda la salida del comando en un string dinámico.
     // Cerrar pipe y verificar estado
     int status = pclose(fp);
     
@@ -99,15 +99,17 @@ char* ejecutar_comando(const char* comando) {
     
     return resultado;
 }
+//Manejo final del resultado según si hubo salida o errores.
 
+//Función principal del servidor
 int main(int argc, char *argv[]) {
-    struct sockaddr_in servidor;
-    struct sockaddr_in cliente;
-    struct hostent* info_cliente;
-    int fd_c;
-    socklen_t longClient;
-    char buf_comando[256];
-    char *buf_respuesta;
+    struct sockaddr_in servidor;  // Estructura para dirección del servidor
+    struct sockaddr_in cliente;   // Estructura para dirección del cliente
+    struct hostent* info_cliente; // Información del hostname del cliente
+    int fd_c;                     // File descriptor del cliente
+    socklen_t longClient;         // Longitud de la estructura cliente
+    char buf_comando[256];        // Buffer para recibir comandos
+    char *buf_respuesta;          // Buffer dinámico para respuestas
     
     // Verificar argumentos
     if (argc != 2) {
@@ -117,8 +119,8 @@ int main(int argc, char *argv[]) {
     }
     
     // Configurar manejador de señales
-    signal(SIGINT, signal_handler);
-    signal(SIGTERM, signal_handler);
+    signal(SIGINT, signal_handler);   // Ctrl+C
+    signal(SIGTERM, signal_handler);  // kill
     
     printf("=== SERVIDOR SSH INICIADO ===\n");
     printf("Puerto: %s\n", argv[1]);
@@ -131,7 +133,7 @@ int main(int argc, char *argv[]) {
         perror("Error al crear socket");
         exit(1);
     }
-    
+    //socket() crea un nuevo socket TCP/IP.
     // Configurar SO_REUSEADDR para reutilizar puerto
     if (setsockopt(fd_s, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) == -1) {
         perror("Error en setsockopt");
@@ -139,16 +141,16 @@ int main(int argc, char *argv[]) {
     } else {
         printf("   setsockopt configurado correctamente\n");
     }
-    
+    //SO_REUSEADDR permite reutilizar el puerto inmediatamente después de cerrar el servidor.
     // 2. Inicializar estructura del servidor
     printf("2. Configurando dirección del servidor...\n");
     memset((char *) &servidor, 0, sizeof(servidor));
-    servidor.sin_family = AF_INET;
-    servidor.sin_addr.s_addr = INADDR_ANY;
-    servidor.sin_port = htons((u_short) atoi(argv[1]));
-    memset(&(servidor.sin_zero), '\0', 8);
+    servidor.sin_family = AF_INET;           // IPv4
+    servidor.sin_addr.s_addr = INADDR_ANY;   // Cualquier interfaz
+    servidor.sin_port = htons((u_short) atoi(argv[1])); // Puerto convertido a network byte order
+    memset(&(servidor.sin_zero), '\0', 8);   // Rellenar con ceros
     
-    // 3. Bind
+    // 3. Bind, bind() asocia el socket con la dirección y puerto especificados.
     printf("3. Haciendo bind al puerto...\n");
     if (bind(fd_s, (struct sockaddr *) &servidor, sizeof(servidor)) < 0) {
         perror("Error en bind");
@@ -156,7 +158,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     
-    // 4. Listen
+    // 4. Listen, pone el socket en modo de escucha con cola de hasta QLEN (2) conexiones pendientes.
     printf("4. Escuchando conexiones entrantes...\n\n");
     if (listen(fd_s, QLEN) < 0) {
         perror("Error en listen");
@@ -170,7 +172,7 @@ int main(int argc, char *argv[]) {
     while(1) {
         printf("Esperando cliente...\n");
         
-        // 5. Accept - esperar conexión de cliente
+        // 5. Accept - esperar conexión de cliente, bloquea hasta que llega una conexión, retorna nuevo socket para comunicarse con el cliente.
         fd_c = accept(fd_s, (struct sockaddr *) &cliente, &longClient);
         if (fd_c < 0) {
             perror("Error en accept");
