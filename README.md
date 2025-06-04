@@ -32,23 +32,23 @@ gcc -o servidor servidor.c
 ```bash
 ./servidor <puerto>
 ```
-# Ejemplo
+## Ejemplo
 ```bash
 ./servidor 8080
 ```
 
-# 2. Iniciar el cliente (en otra terminal o máquina)
+## 2. Iniciar el cliente (en otra terminal o máquina)
 ```bash
 ./cliente <IP-servidor> <puerto>
 ```
 
-# Ejemplos
+## Ejemplos
 ```bash
 ./cliente 127.0.0.1 8080       # Conexión local
 ./cliente 192.168.1.100 8080   # Conexión remota
 ```
 
-# 3. Usar comandos dentro del cliente
+## 3. Usar comandos dentro del cliente
 ```bash
 ls -l
 pwd
@@ -57,15 +57,15 @@ date
 ps -e
 ```
 
-# 4. Para terminar la sesión
+## 4. Para terminar la sesión
 ```bash
 exit
 ```
-# O también
+## O también
 ```bash
 salir
 ```
-# También puedes usar Ctrl+C
+## También puedes usar Ctrl+C
 
 
 ## ⚠️ Consideraciones
